@@ -4,21 +4,21 @@ import { PrivyProvider } from '@privy-io/react-auth';
 import { createSolanaRpc, createSolanaRpcSubscriptions } from '@solana/kit';
 import { ReactNode } from 'react';
 
-const privyAppId = process.env.NEXT_PUBLIC_PRIVY_APP_ID as string;
-const heliusApiKey = process.env.NEXT_PUBLIC_HELIUS_API_KEY || '';
+const privyAppId = process.env.VITE_PRIVY_APP_ID || process.env.NEXT_PUBLIC_PRIVY_APP_ID as string;
+const heliusApiKey = process.env.VITE_HELIUS_API_KEY || process.env.NEXT_PUBLIC_HELIUS_API_KEY || '';
 
 if (!privyAppId) {
-  throw new Error('NEXT_PUBLIC_PRIVY_APP_ID is not set in environment variables');
+  throw new Error('VITE_PRIVY_APP_ID or NEXT_PUBLIC_PRIVY_APP_ID is not set in environment variables');
 }
 
-// Fallback to public mainnet RPC if Helius API key is not provided
+// Fallback to public devnet RPC if Helius API key is not provided
 const rpcUrl = heliusApiKey
-  ? `https://mainnet.helius-rpc.com/?api-key=${heliusApiKey}`
-  : 'https://api.mainnet-beta.solana.com';
+  ? `https://devnet.helius-rpc.com/?api-key=${heliusApiKey}`
+  : 'https://api.devnet.solana.com';
 
 const rpcSubscriptionsUrl = heliusApiKey
-  ? `wss://mainnet.helius-rpc.com/?api-key=${heliusApiKey}`
-  : 'wss://api.mainnet-beta.solana.com';
+  ? `wss://devnet.helius-rpc.com/?api-key=${heliusApiKey}`
+  : 'wss://api.devnet.solana.com';
 
 export function PrivyProviderWrapper({ children }: { children: ReactNode }) {
   return (
@@ -35,13 +35,13 @@ export function PrivyProviderWrapper({ children }: { children: ReactNode }) {
         loginMethods: ['email', 'google', 'discord'],
         solanaClusters: [
           {
-            name: 'mainnet-beta',
+            name: 'devnet',
             rpcUrl: rpcUrl,
           },
         ],
         solana: {
           rpcs: {
-            'solana:mainnet': {
+            'solana:devnet': {
               rpc: createSolanaRpc(rpcUrl),
               rpcSubscriptions: createSolanaRpcSubscriptions(rpcSubscriptionsUrl),
             },

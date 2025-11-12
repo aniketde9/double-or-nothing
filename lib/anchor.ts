@@ -2,7 +2,7 @@ import { AnchorProvider, Program, Wallet } from '@coral-xyz/anchor';
 import { Connection, PublicKey, Keypair } from '@solana/web3.js';
 import { PROGRAM_ID } from '@/constants/vault';
 
-const HELIUS_RPC_URL = process.env.NEXT_PUBLIC_HELIUS_RPC_URL || 'https://api.mainnet-beta.solana.com';
+const HELIUS_RPC_URL = process.env.VITE_HELIUS_RPC_URL || process.env.NEXT_PUBLIC_HELIUS_RPC_URL || 'https://api.devnet.solana.com';
 
 export const connection = new Connection(HELIUS_RPC_URL, 'confirmed');
 

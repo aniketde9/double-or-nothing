@@ -83,7 +83,7 @@ const allowedOrigins = [
   'https://sher-gifting.vercel.app',
   'https://sher-gifting-4behyaor6-aniketde9s-projects.vercel.app', // Vercel preview URLs
   FRONTEND_URL,
-  process.env.NEXT_PUBLIC_BACKEND_URL?.replace('/api', '') || '',
+  (process.env.VITE_BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL)?.replace('/api', '') || '',
 ];
 
 app.use(cors({
@@ -128,17 +128,17 @@ if (!PRIVY_APP_ID || !PRIVY_APP_SECRET) {
 }
 
 if (!HELIUS_API_KEY) {
-  console.warn("⚠️ Warning: Missing HELIUS_API_KEY. Using public mainnet RPC (rate limited).");
+  console.warn("⚠️ Warning: Missing HELIUS_API_KEY. Using public devnet RPC (rate limited).");
 }
 
 // ✅ FIXED: Always create connection (don't make it null)
-// Use Helius mainnet if API key exists, otherwise use public mainnet RPC
-// Helius format: https://mainnet.helius-rpc.com/?api-key=YOUR_KEY
+// Use Helius devnet if API key exists, otherwise use public devnet RPC
+// Helius format: https://devnet.helius-rpc.com/?api-key=YOUR_KEY
 const RPC_URL = HELIUS_API_KEY
-  ? `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`
-  : 'https://api.mainnet.solana.com';
+  ? `https://devnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`
+  : 'https://api.devnet.solana.com';
 
-console.log('🌐 Connecting to Solana Mainnet RPC:', RPC_URL.replace(HELIUS_API_KEY || '', '***'));
+console.log('🌐 Connecting to Solana Devnet RPC:', RPC_URL.replace(HELIUS_API_KEY || '', '***'));
 
 const connection = new Connection(RPC_URL, 'confirmed');
 
@@ -146,7 +146,7 @@ const connection = new Connection(RPC_URL, 'confirmed');
 (async () => {
   try {
     const version = await connection.getVersion();
-    console.log('✅ Successfully connected to Solana Mainnet. Version:', version['solana-core']);
+    console.log('✅ Successfully connected to Solana Devnet. Version:', version['solana-core']);
   } catch (error: any) {
     console.error('❌ Failed to connect to Solana RPC:', error?.message || error);
     console.error('🔧 Please check your HELIUS_API_KEY in server/.env file');

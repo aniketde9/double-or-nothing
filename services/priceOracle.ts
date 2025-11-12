@@ -1,6 +1,6 @@
 import { PRICE_ORACLE } from '@/constants/vault';
 
-const HELIUS_API_KEY = process.env.NEXT_PUBLIC_HELIUS_API_KEY;
+const HELIUS_API_KEY = process.env.VITE_HELIUS_API_KEY || process.env.NEXT_PUBLIC_HELIUS_API_KEY;
 
 interface PriceData {
   price: number;

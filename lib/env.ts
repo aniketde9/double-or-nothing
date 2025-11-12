@@ -4,8 +4,8 @@
  */
 
 const requiredEnvVars = [
-  'NEXT_PUBLIC_PRIVY_APP_ID',
-  'NEXT_PUBLIC_HELIUS_API_KEY',
+  'VITE_PRIVY_APP_ID',
+  'VITE_HELIUS_API_KEY',
 ] as const;
 
 const optionalEnvVars = [
@@ -43,12 +43,12 @@ export function getEnvConfig(): EnvConfig {
   }
 
   return {
-    PRIVY_APP_ID: process.env.NEXT_PUBLIC_PRIVY_APP_ID!,
-    HELIUS_API_KEY: process.env.NEXT_PUBLIC_HELIUS_API_KEY!,
-    HELIUS_RPC_URL: process.env.NEXT_PUBLIC_HELIUS_RPC_URL || 
-      `https://mainnet.helius-rpc.com/?api-key=${process.env.NEXT_PUBLIC_HELIUS_API_KEY}`,
-    PROGRAM_ID: process.env.NEXT_PUBLIC_PROGRAM_ID || null,
-    BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL || '/api',
+    PRIVY_APP_ID: process.env.VITE_PRIVY_APP_ID || process.env.NEXT_PUBLIC_PRIVY_APP_ID!,
+    HELIUS_API_KEY: process.env.VITE_HELIUS_API_KEY || process.env.NEXT_PUBLIC_HELIUS_API_KEY!,
+    HELIUS_RPC_URL: process.env.VITE_HELIUS_RPC_URL || process.env.NEXT_PUBLIC_HELIUS_RPC_URL || 
+      `https://devnet.helius-rpc.com/?api-key=${process.env.VITE_HELIUS_API_KEY || process.env.NEXT_PUBLIC_HELIUS_API_KEY}`,
+    PROGRAM_ID: process.env.VITE_PROGRAM_ID || process.env.NEXT_PUBLIC_PROGRAM_ID || null,
+    BACKEND_URL: process.env.VITE_BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || '/api',
   };
 }
 

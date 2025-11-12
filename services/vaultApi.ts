@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Vault } from '@/types';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || '/api';
+const BACKEND_URL = process.env.VITE_BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || '/api';
 
 const apiClient = axios.create({
   baseURL: BACKEND_URL,

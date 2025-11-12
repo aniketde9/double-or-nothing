@@ -17,8 +17,8 @@ const HELIUS_API_KEY = process.env.HELIUS_API_KEY;
 // Initialize Solana connection
 const connection = new Connection(
   HELIUS_API_KEY
-    ? `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`
-    : 'https://api.mainnet-beta.solana.com'
+    ? `https://devnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`
+    : 'https://api.devnet.solana.com'
 );
 
 /**

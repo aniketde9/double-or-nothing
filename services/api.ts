@@ -3,7 +3,7 @@ import { TokenBalance, Token } from '../types';
 
 // Use environment variable for backend URL in production, fallback to /api for local dev
 // If NEXT_PUBLIC_BACKEND_URL is set but doesn't end with /api, append it
-let BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || '/api';
+let BACKEND_URL = process.env.VITE_BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || '/api';
 if (BACKEND_URL !== '/api' && !BACKEND_URL.endsWith('/api')) {
   BACKEND_URL = `${BACKEND_URL}/api`;
 }

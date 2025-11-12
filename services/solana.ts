@@ -1,10 +1,10 @@
 import { Connection, PublicKey, SystemProgram, Transaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
 
-// ✅ Use Helius mainnet RPC endpoint (or fallback to public mainnet)
-const HELIUS_API_KEY = import.meta.env.VITE_HELIUS_API_KEY;
+// ✅ Use Helius devnet RPC endpoint (or fallback to public devnet)
+const HELIUS_API_KEY = process.env.VITE_HELIUS_API_KEY || process.env.NEXT_PUBLIC_HELIUS_API_KEY;
 const RPC_URL = HELIUS_API_KEY 
-  ? `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`
-  : 'https://api.mainnet.solana.com';
+  ? `https://devnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`
+  : 'https://api.devnet.solana.com';
 
 export const connection = new Connection(RPC_URL, 'confirmed');
 

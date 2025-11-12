@@ -141,7 +141,7 @@ export default function CreateVaultPage() {
       }
 
       const walletPubkey = new PublicKey(solanaWallet.address);
-      const programId = process.env.NEXT_PUBLIC_PROGRAM_ID;
+      const programId = process.env.VITE_PROGRAM_ID || process.env.NEXT_PUBLIC_PROGRAM_ID;
       
       // For now, allow vault creation flow without program ID (smart contract not deployed yet)
       // In production, this will be required

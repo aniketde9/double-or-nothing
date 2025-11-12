@@ -2,8 +2,8 @@ import { PublicKey } from '@solana/web3.js';
 
 // Program ID will be set when Anchor program is deployed
 // For now, use a placeholder that will be replaced
-export const PROGRAM_ID = process.env.NEXT_PUBLIC_PROGRAM_ID
-  ? new PublicKey(process.env.NEXT_PUBLIC_PROGRAM_ID)
+export const PROGRAM_ID = (process.env.VITE_PROGRAM_ID || process.env.NEXT_PUBLIC_PROGRAM_ID)
+  ? new PublicKey(process.env.VITE_PROGRAM_ID || process.env.NEXT_PUBLIC_PROGRAM_ID!)
   : new PublicKey('11111111111111111111111111111111'); // System program as placeholder
 
 export const TIMEFRAMES = {

@@ -36,14 +36,14 @@ if (!privyAppId) {
   throw new Error("VITE_PRIVY_APP_ID is not set in environment variables");
 }
 
-// ✅ Fallback to public mainnet RPC if Helius API key is not provided
+// ✅ Fallback to public devnet RPC if Helius API key is not provided
 const rpcUrl = heliusApiKey 
-  ? `https://mainnet.helius-rpc.com/?api-key=${heliusApiKey}`
-  : 'https://api.mainnet-beta.solana.com';
+  ? `https://devnet.helius-rpc.com/?api-key=${heliusApiKey}`
+  : 'https://api.devnet.solana.com';
   
 const rpcSubscriptionsUrl = heliusApiKey
-  ? `wss://mainnet.helius-rpc.com/?api-key=${heliusApiKey}`
-  : 'wss://api.mainnet-beta.solana.com';
+  ? `wss://devnet.helius-rpc.com/?api-key=${heliusApiKey}`
+  : 'wss://api.devnet.solana.com';
 
 // ✅ Debug: Log RPC configuration (without exposing API key)
 console.log('🔧 Privy Solana RPC Config:', {
@@ -66,10 +66,10 @@ root.render(
           showWalletLoginFirst: false,
           walletChainType: 'solana-only', // ✅ Forces Solana-only wallet creation
         },
-        // ✅ Privy v3 Solana configuration - use 'solana:mainnet' (NOT 'solana:mainnet-beta')
+        // ✅ Privy v3 Solana configuration - use 'solana:devnet' for devnet testing
         solana: {
           rpcs: {
-            'solana:mainnet': {
+            'solana:devnet': {
               rpc: createSolanaRpc(rpcUrl),
               rpcSubscriptions: createSolanaRpcSubscriptions(rpcSubscriptionsUrl),
             },
