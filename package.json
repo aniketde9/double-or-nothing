@@ -1,15 +1,15 @@
 {
-  "name": "solana-crypto-gifting",
+  "name": "double-or-nothing",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
+    "@coral-xyz/anchor": "^0.29.0",
     "@privy-io/react-auth": "^3.4.1",
     "@solana-program/memo": "^0.8.0",
     "@solana-program/system": "^0.8.0",
@@ -17,15 +17,15 @@
     "@solana/kit": "^3.0.0",
     "@solana/spl-token": "^0.3.11",
     "@solana/web3.js": "^1.98.4",
-    "@tiplink/api": "^0.2.1",
-    "@types/qrcode": "^1.5.6",
+    "@tanstack/react-query": "^5.56.2",
     "axios": "^1.7.9",
     "bs58": "^6.0.0",
-    "dotenv": "^17.2.3",
-    "qrcode": "^1.5.4",
+    "date-fns": "^3.6.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.28.0"
+    "react-hot-toast": "^2.4.1",
+    "zod": "^3.23.8",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@types/node": "^24.9.1",
@@ -33,18 +33,17 @@
     "@types/react-dom": "^18.3.1",
     "@typescript-eslint/eslint-plugin": "^8.15.0",
     "@typescript-eslint/parser": "^8.15.0",
-    "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.1",
     "eslint": "^9.15.0",
+    "eslint-config-next": "^14.2.5",
     "eslint-plugin-react-hooks": "^5.0.0",
-    "eslint-plugin-react-refresh": "^0.4.14",
+    "next": "^14.2.5",
     "postcss": "^8.4.49",
     "process": "^0.11.10",
     "stream-browserify": "^3.0.0",
     "tailwindcss": "^3.4.15",
-    "typescript": "^5.7.2",
-    "vite": "^6.0.1"
+    "typescript": "^5.7.2"
   }
 }

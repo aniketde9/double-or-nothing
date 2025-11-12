@@ -1,15 +1,32 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import { TipLink } from '@tiplink/api';
 import { Connection, LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction, sendAndConfirmTransaction } from '@solana/web3.js';
 import { getAssociatedTokenAddress, createAssociatedTokenAccountInstruction, createTransferInstruction, TOKEN_PROGRAM_ID } from '@solana/spl-token';
-import 'dotenv/config';
 import QRCode from 'qrcode';
 import fs from 'fs';
 import path from 'path';
 import { authenticateToken, AuthRequest } from './authMiddleware';
 import { sendGiftNotification } from './emailService';
 import { insertGift, getGiftsBySender, getGiftById, updateGiftClaim } from './database';
+import { validateServerConfig } from './config';
+
+// Import new vault routes
+import authRoutes from './routes/auth';
+import vaultRoutes from './routes/vaults';
+import priceRoutes from './routes/prices';
+import webhookRoutes from './routes/webhooks';
+import { getUserVaults, updateVaultPrice, updateVaultUnlockStatus, addPriceHistory, query } from './database';
+import { priceOracle } from './services/priceOracle';
+
+// Validate environment variables on startup
+try {
+  validateServerConfig();
+} catch (error) {
+  console.error('⚠️  Configuration validation failed. Server may not work correctly.');
+  console.error('   This is OK in development if you are setting up for the first time.');
+}
 
 
 // --- Types (duplicated from frontend for simplicity) ---
@@ -59,13 +76,14 @@ if (!fs.existsSync(qrCodesDir)) {
 app.use('/qrcodes', express.static(path.join(__dirname, '../public/qrcodes')));
 
 // ✅ CORS configuration - allow Vercel frontend and localhost
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
   'https://sher-gifting.vercel.app',
   'https://sher-gifting-4behyaor6-aniketde9s-projects.vercel.app', // Vercel preview URLs
   FRONTEND_URL,
+  process.env.NEXT_PUBLIC_BACKEND_URL?.replace('/api', '') || '',
 ];
 
 app.use(cors({
@@ -829,9 +847,106 @@ app.post('/api/gifts/:giftId/claim', async (req, res) => {
   }
 });
 
+// Mount new API routes
+app.use('/api/auth', authRoutes);
+app.use('/api/vaults', vaultRoutes);
+app.use('/api/prices', priceRoutes);
+app.use('/api/webhook', webhookRoutes);
+
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+  });
 });
 
-app.listen(PORT, () => console.log(`Server listening on http://localhost:${PORT}`));
+// Scheduled jobs for price updates and unlock status checking
+/**
+ * Update prices for all active (locked) vaults
+ * Runs every 5 minutes
+ */
+async function updateVaultPrices() {
+  try {
+    console.log('🔄 Starting scheduled price update...');
+    
+    // Get all locked vaults
+    const allVaults = await query(
+      `SELECT * FROM vaults WHERE is_unlocked = FALSE ORDER BY created_at DESC`
+    );
+
+    if (allVaults.length === 0) {
+      console.log('   No active vaults to update');
+      return;
+    }
+
+    console.log(`   Updating prices for ${allVaults.length} vaults...`);
+
+    let updated = 0;
+    let errors = 0;
+
+    for (const vault of allVaults) {
+      try {
+        const currentPrice = await priceOracle.getPrice(vault.token_mint);
+        
+        if (currentPrice && currentPrice !== vault.current_price) {
+          await updateVaultPrice(vault.id, currentPrice);
+          await addPriceHistory(vault.id, currentPrice);
+          updated++;
+        }
+
+        // Check unlock conditions
+        const now = new Date();
+        const unlockDate = new Date(vault.unlock_timestamp);
+        const isTimeUnlocked = now >= unlockDate;
+        const isPriceDoubled = vault.unlock_type === 'PriceDouble' && 
+          currentPrice && currentPrice >= vault.initial_price * 2;
+        const isUnlocked = isTimeUnlocked || isPriceDoubled;
+
+        if (isUnlocked && !vault.is_unlocked) {
+          let reason = '';
+          if (isPriceDoubled) {
+            reason = 'Price doubled';
+          } else if (isTimeUnlocked) {
+            reason = 'Time expired';
+          }
+          await updateVaultUnlockStatus(vault.id, true, reason);
+          console.log(`   ✅ Vault ${vault.id} unlocked: ${reason}`);
+        }
+      } catch (error) {
+        console.error(`   ❌ Error updating vault ${vault.id}:`, error);
+        errors++;
+      }
+    }
+
+    console.log(`   ✅ Price update complete: ${updated} updated, ${errors} errors`);
+  } catch (error) {
+    console.error('❌ Error in scheduled price update:', error);
+  }
+}
+
+// Run price updates every 5 minutes
+const PRICE_UPDATE_INTERVAL = 5 * 60 * 1000; // 5 minutes
+setInterval(updateVaultPrices, PRICE_UPDATE_INTERVAL);
+
+// Run initial price update after 30 seconds (to let server start)
+setTimeout(updateVaultPrices, 30000);
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🔗 Frontend URL: ${FRONTEND_URL}`);
+  if (HELIUS_API_KEY) {
+    console.log('✅ Helius API key configured');
+  } else {
+    console.warn('⚠️  Helius API key not configured');
+  }
+  console.log('✅ Vault API routes mounted');
+  console.log('   - /api/auth');
+  console.log('   - /api/vaults');
+  console.log('   - /api/prices');
+  console.log('   - /api/webhook');
+  console.log(`✅ Scheduled jobs started (price updates every ${PRICE_UPDATE_INTERVAL / 1000 / 60} minutes)`);
+});

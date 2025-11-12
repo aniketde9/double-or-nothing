@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { TokenBalance, Gift, GiftInfo, Token } from '../types';
+import { TokenBalance, Token } from '../types';
 
 // Use environment variable for backend URL in production, fallback to /api for local dev
-// If VITE_BACKEND_URL is set but doesn't end with /api, append it
-let BACKEND_URL = import.meta.env.VITE_BACKEND_URL || '/api';
+// If NEXT_PUBLIC_BACKEND_URL is set but doesn't end with /api, append it
+let BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || '/api';
 if (BACKEND_URL !== '/api' && !BACKEND_URL.endsWith('/api')) {
   BACKEND_URL = `${BACKEND_URL}/api`;
 }
@@ -61,55 +61,3 @@ export const feeService = {
   },
 };
 
-export const tiplinkService = {
-  create: async (): Promise<{ tiplink_url: string; tiplink_public_key: string }> => {
-    const response = await apiClient.post('/tiplink/create');
-    return response.data;
-  },
-};
-
-export const giftService = {
-  createGift: async (giftData: {
-    recipient_email: string;
-    token_mint: string;
-    amount: number;
-    message?: string;
-    sender_did: string;
-    tiplink_url: string;
-    tiplink_public_key: string;
-    funding_signature: string;
-    token_symbol?: string;
-    token_decimals?: number;
-  }): Promise<{ 
-    gift_id: string;
-    claim_url: string;
-    tiplink_public_key: string;
-    signature: string;
-  }> => {
-    const response = await apiClient.post('/gifts/create', giftData);
-    return response.data;
-  },
-
-  getGiftInfo: async (giftId: string): Promise<GiftInfo> => {
-    const response = await apiClient.get(`/gifts/${giftId}`);
-    return response.data;
-  },
-
-  claimGift: async (giftId: string, claimData: { 
-    recipient_did: string; 
-    recipient_wallet: string;
-  }): Promise<{ 
-    success: boolean;
-    signature: string;
-    amount: number;
-    token_symbol: string;
-  }> => {
-    const response = await apiClient.post(`/gifts/${giftId}/claim`, claimData);
-    return response.data;
-  },
-
-  getGiftHistory: async (): Promise<Gift[]> => {
-    const response = await apiClient.get('/gifts/history');
-    return response.data;
-  },
-};

@@ -1,3 +1,4 @@
+import { PublicKey } from '@solana/web3.js';
 
 export interface User {
   privy_did: string;
@@ -19,37 +20,36 @@ export interface TokenBalance extends Token {
   logoURI?: string;
 }
 
-export enum GiftStatus {
-  SENT = 'SENT',
-  CLAIMED = 'CLAIMED',
-  EXPIRED = 'EXPIRED',
-}
+export type UnlockType = 'TimeOnly' | 'PriceDouble';
 
-export interface Gift {
+export interface Vault {
   id: string;
-  sender_did: string;
-  sender_email: string;
-  recipient_email: string;
+  vault_pubkey: string;
+  user_id: string;
   token_mint: string;
   token_symbol: string;
-  token_decimals: number;
   amount: number;
-  message: string;
-  status: GiftStatus;
-  tiplink_url: string;
-  tiplink_public_key: string;
-  transaction_signature: string;
+  initial_price: number;
+  current_price: number;
+  locked_at: string;
+  unlock_timestamp: string;
+  unlock_type: UnlockType;
+  is_unlocked: boolean;
+  unlock_reason?: string;
+  unlocked_at?: string;
   created_at: string;
-  claimed_at?: string | null;
-  claimed_by?: string | null;
-  claim_signature?: string | null;
 }
 
-export interface GiftInfo {
-  amount: number;
-  token_symbol: string;
-  sender_email: string;
-  message?: string;
-  status: GiftStatus;
-  created_at: string;
+export interface VaultState {
+  owner: PublicKey;
+  deposited_mint: PublicKey;
+  deposited_amount: number;
+  initial_price: number;
+  locked_at_timestamp: number;
+  unlock_timestamp: number;
+  unlock_type: UnlockType;
+  is_unlocked: boolean;
+  vault_bump: number;
+  token_account_bump: number;
+  confirmations_count: number;
 }

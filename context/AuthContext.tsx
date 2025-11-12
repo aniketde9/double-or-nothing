@@ -1,7 +1,9 @@
+'use client';
+
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { usePrivy, useWallets } from '@privy-io/react-auth';
-import { User } from '../types';
-import { userService, setAuthToken } from '../services/api';
+import { User } from '@/types';
+import { userService, setAuthToken } from '@/services/api';
 
 interface AuthContextType {
   user: User | null;
