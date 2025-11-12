@@ -28,3 +28,10 @@ server/.env
 *.njsproj
 *.sln
 *.sw?
+
+# Rust/Anchor build artifacts
+target/
+!target/idl/
+!target/deploy/
+programs/*/target/
+.anchor/

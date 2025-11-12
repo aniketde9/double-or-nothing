@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@coral-xyz/anchor": "^0.29.0",
+    "@coral-xyz/anchor": "0.31.1",
     "@privy-io/react-auth": "^3.4.1",
     "@solana-program/memo": "^0.8.0",
     "@solana-program/system": "^0.8.0",

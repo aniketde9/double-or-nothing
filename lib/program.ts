@@ -18,26 +18,29 @@ export async function loadProgramIdl(): Promise<any> {
     return programIdl;
   }
 
-  // TODO: Load IDL from file or fetch from chain
-  // Example:
-  // try {
-  //   const idl = await import('@/idl/double_or_nothing.json');
-  //   programIdl = idl.default || idl;
-  //   return programIdl;
-  // } catch (error) {
-  //   // Try fetching from chain
-  //   const idl = await Program.fetchIdl(PROGRAM_ID, connection);
-  //   if (idl) {
-  //     programIdl = idl;
-  //     return idl;
-  //   }
-  // }
+  // Try loading IDL from file first
+  try {
+    const idl = await import('@/idl/double_or_nothing.json');
+    programIdl = idl.default || idl;
+    return programIdl;
+  } catch (error) {
+    console.warn('Failed to load IDL from file, trying to fetch from chain...', error);
+    
+    // Fallback: Try fetching from chain
+    try {
+      const { connection } = await import('./anchor');
+      const idl = await Program.fetchIdl(PROGRAM_ID, connection);
+      if (idl) {
+        programIdl = idl;
+        return idl;
+      }
+    } catch (chainError) {
+      console.error('Failed to fetch IDL from chain:', chainError);
+    }
+  }
 
   throw new Error(
-    'Program IDL not loaded. Please deploy the Anchor program and load the IDL.\n' +
-    'You can either:\n' +
-    '1. Import the IDL JSON file: import idl from "@/idl/double_or_nothing.json";\n' +
-    '2. Or fetch from chain: const idl = await Program.fetchIdl(PROGRAM_ID, connection);'
+    'Program IDL not loaded. Please deploy the Anchor program and ensure the IDL file exists at idl/double_or_nothing.json'
   );
 }
 
