@@ -35,3 +35,10 @@ target/
 !target/deploy/
 programs/*/target/
 .anchor/
+
+# Rust/Anchor build artifacts
+target/
+!target/idl/
+!target/deploy/
+programs/*/target/
+.anchor/
